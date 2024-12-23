@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <filter>
+        <filter-name>loginfilter</filter-name>
+        <filter-class>edu.csu.web_last.trigger.http.filter.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>loginfilter</filter-name>
+        <url-pattern>/admin/login.html</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>dashboardFilter</filter-name>
+        <filter-class>edu.csu.web_last.trigger.http.filter.DashboardFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>dashboardFilter</filter-name>
+        <url-pattern>/admin/dashboard.html</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>login</servlet-name>
+        <servlet-class>edu.csu.web_last.trigger.http.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/auth/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>fileUpdate</servlet-name>
+        <servlet-class>edu.csu.web_last.trigger.http.servlet.FileUpdateServlet</servlet-class>
+        <multipart-config>
+            <location>/tmp</location>
+            <max-file-size>52428800</max-file-size>
+            <max-request-size>262144000</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fileUpdate</servlet-name>
+        <url-pattern>/admin/file/update</url-pattern>
+
+    </servlet-mapping>
+</web-app>

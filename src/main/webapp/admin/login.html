@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .login-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .login-form h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-form .captcha-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .login-form .captcha-container input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .login-form .captcha-container .captcha-image {
+            height: 40px;
+            width: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-family: monospace;
+            color: #fff;
+            background-color: #007BFF;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-form .remember-me {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .login-form .remember-me input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-form">
+    <h2>Login</h2>
+    <form id="loginForm">
+        <input type="text" id="username" name="username" placeholder="Username" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        
+        <div class="captcha-container">
+            <input type="text" id="captcha" name="captcha" placeholder="Enter Captcha" required>
+            <div class="captcha-image" id="captchaImage" onclick="generateCaptcha()">Click to refresh</div>
+        </div>
+        
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe" name="rememberMe">
+            <label for="rememberMe">Remember me</label>
+        </div>
+        
+        <button type="submit">Login</button>
+    </form>
+    <div id="errorMessage" class="error-message"></div>
+</div>
+
+<script>
+    // 生成随机验证码
+    let captchaCode = "";
+
+    function generateCaptcha() {
+        const chars = "0123456789";
+        captchaCode = "";
+        for (let i = 0; i < 6; i++) {
+            captchaCode += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('captchaImage').textContent = captchaCode;
+    }
+
+    // 初始化验证码
+    generateCaptcha();
+
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const captchaInput = document.getElementById('captcha').value;
+
+        // if (captchaInput !== captchaCode) {
+        //     document.getElementById('errorMessage').textContent = "Invalid Captcha!";
+        //     generateCaptcha(); // 刷新验证码
+        //     return;
+        // }
+
+        const rememberMe = document.getElementById('rememberMe').checked;
+        console.log("remember me: " + rememberMe);
+
+        const loginForm = document.getElementById("loginForm");
+        const formData = new FormData(loginForm);
+        const loginData = {
+            username: formData.get('username'),
+            password: formData.get('password'),
+            rememberme: rememberMe,
+        }
+        console.log(loginData );
+
+        // 示例：模拟发送数据到服务器
+        fetch('/web_last/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(loginData)
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = 'dashboard.html'; // 登录成功后跳转
+            } else if (response.status === 401) {
+                throw new Error("Username or password not correct.");
+            } else {
+                throw new Error("An error occurred. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').textContent = error.message;
+            generateCaptcha(); // 刷新验证码
+        });
+    });
+</script>
+
+</body>
+</html>

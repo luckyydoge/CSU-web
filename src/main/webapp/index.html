@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>官网</title>
+    <link rel="stylesheet" href="css/web.css"
+          media="(min-width:1230px)">
+    <link rel="stylesheet" href="css/web2.css"
+          media="(min-width:940px) and (max-width:1229px)">
+    <link rel="stylesheet" href="css/web3.css"
+          media="(min-width:700px) and (max-width:939px)">
+    <link rel="stylesheet" href="css/web4.css"
+          media="(max-width:699px)">
+    <link rel="stylesheet" href="css/carousel.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .link a{
+            text-decoration: none;
+            color: #000;
+            display: block;
+        }
+        .link a:hover{
+            color: red;
+            transform: scale(1.2);
+        }
+        ul{
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<script>
+    //禁止放大
+    document.body.onresize = function(){
+        if( window.devicePixelRatio >= 1.6)
+            document.body.style.zoom = 1 / (window.devicePixelRatio)*1.6
+    }
+    document.body.onresize();
+
+    window.addEventListener('mousewheel', function(event){
+        if ((event.ctrlKey === true || event.metaKey) && event.deltaY < 0&&window.devicePixelRatio>=1.6) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    window.addEventListener('DOMMouseScroll', function(event){
+        if ((event.ctrlKey === true || event.metaKey) && event.detail < 0&&window.devicePixelRatio>=1.6) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+
+</script>
+
+<div class="fix">
+    <div class="nav">
+        <div class="logo">
+            <img src="picture/P1/m22.png" class="m1">
+        </div>
+        <div class="link">
+            <ul>
+                <li><a href="#">网站首页</a></li>
+                <li><a href="#">关于我们</a></li>
+                <li><a href="#">服务项目</a></li>
+                <li><a href="#">案例展示</a></li>
+                <li><a href="#">新闻中心</a></li>
+                <li><a href="#">人才发展</a></li>
+                <li><a href="#">联系我们</a></li>
+            </ul>
+        </div>
+        <div class="btn">
+            <div class="p1">
+                <img src="picture/P1/search.png">
+            </div>
+            <div class="p2">
+                <img src="picture/P1/tel.png">
+            </div>
+            <div class="p3">
+                <text>0551-88888888</text>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="banner">
+<!--    <img src="picture/P1/tu.png" class="m1">-->
+    <div class="carousel ">
+        <div class="slides m1">
+            <!-- 图片会动态加载到这里 -->
+        </div>
+        <div class="controls">
+            <button class="prev">❮</button>
+            <button class="next">❯</button>
+        </div>
+        <div class="indicators">
+            <!-- 指示器会动态生成 -->
+        </div>
+    </div>
+    <script>
+        const slidesContainer = document.querySelector('.slides');
+        const indicatorsContainer = document.querySelector('.indicators');
+        const prevButton = document.querySelector('.prev');
+        const nextButton = document.querySelector('.next');
+
+        let currentIndex = 0;
+        let images = [];
+
+        // 从服务器获取图片列表和图片数量
+        async function fetchImages() {
+            try {
+                const response = await fetch('http://localhost:32425/web_last/api/queryImg');
+                const data = await response.json();
+                images = data.data.images;
+                renderSlides();
+                renderIndicators();
+            } catch (error) {
+                console.error('获取图片失败:', error);
+            }
+        }
+
+        // 渲染幻灯片
+        function renderSlides() {
+            slidesContainer.innerHTML = ''; // 清空现有内容
+            images.forEach(imageUrl => {
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                slide.appendChild(img);
+                slidesContainer.appendChild(slide);
+            });
+        }
+
+        // 渲染指示器
+        function renderIndicators() {
+            indicatorsContainer.innerHTML = ''; // 清空现有内容
+            images.forEach((_, index) => {
+                const indicator = document.createElement('span');
+                indicator.className = 'indicator';
+                if (index === currentIndex) {
+                    indicator.classList.add('active');
+                }
+                indicator.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateSlides();
+                });
+                indicatorsContainer.appendChild(indicator);
+            });
+        }
+
+        // 更新幻灯片位置
+        function updateSlides() {
+            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+            updateIndicators();
+        }
+
+        // 更新指示器
+        function updateIndicators() {
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        // 切换到上一张幻灯片
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateSlides();
+        }
+
+        // 切换到下一张幻灯片
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateSlides();
+        }
+
+        // 自动播放
+        let autoPlayInterval = setInterval(nextSlide, 3000);
+
+        // 停止自动播放
+        function stopAutoPlay() {
+            clearInterval(autoPlayInterval);
+        }
+
+        // 重新开始自动播放
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(nextSlide, 3000);
+        }
+
+        // 监听按钮点击事件
+        prevButton.addEventListener('click', () => {
+            stopAutoPlay();
+            prevSlide();
+            startAutoPlay();
+        });
+
+        nextButton.addEventListener('click', () => {
+            stopAutoPlay();
+            nextSlide();
+            startAutoPlay();
+        });
+
+        // 初始化
+        fetchImages();
+    </script>
+<!--    <div class="logo">-->
+<!--        <div class="word">-->
+<!--            <img src="picture/P1/word.png" class="m2">-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="container">
+        <img src="picture/P1/bg1.png" class="m1">
+        <div class="p1">
+            <img src="picture/P1/tel.png">
+        </div>
+        <div class="p2">
+            <text>在园林景观设计中，你知道庭院景观有哪些设计要素吗？</text>
+        </div>
+        <div class="p3">
+            <text>2019-06-17</text>
+        </div>
+        <div class="p4">
+            <div class="up">
+                <img src="picture/P1/up.png">
+            </div>
+            <div class="btm">
+                <img src="picture/P1/down.png">
+            </div>
+        </div>
+        <div class="p5">
+            <div class="up">
+                <text>安徽拓盛建设工程有限公司</text>
+            </div>
+            <div class="btm">
+                <text>0551-88888888</text>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="serve">
+    <div class="left">
+
+    </div>
+    <div class="mid">
+        <div style="flex: 5%;"></div>
+        <div style="flex: 5%;">
+            <text class="t1">|</text>
+        </div>
+        <div style="flex: 5%;"></div>
+        <div style="flex: 20%;">
+            <p class="t2">TUO SHENG</p>
+            <p class="t2">PROJECT</p>
+            <p class="t3">服务项目</p>
+            <p class="t4">以匠人之心打造传世精品，探究未知的世界</p>
+        </div>
+        <div style="flex: 15%;"></div>
+        <div style="flex: 5%;">
+            <p class="t5">建筑装修装饰工程专业承包</p>
+            <p class="t6">Professional Contracting of Building Decoration and Decoration Engineering</p>
+        </div>
+        <div style="flex: 15%;"></div>
+        <div style="flex: 10%;">
+            <p class="t7">主体与建筑及周围环境这个客体有机结合，加入生态美学的观点，把人与自然、人与环境的关系作为一个生态系统和有机整体来研究，既不是脱离自然与环境去研究孤立的人，也不是脱离人去研究纯客观的自然与环境。</p>
+        </div>
+        <div style="flex: 5%;"></div>
+        <div style="flex: 10%;" class="wrap">
+            <div class="p1">
+                <text style="display: block;">查看详情+</text>
+            </div>
+            <div class="p2">
+                <text style="display: block;">立即资讯</text>
+            </div>
+        </div>
+        <div style="flex: 5%;"></div>
+    </div>
+    <div class="right">
+        <div class="p1">
+            <img id="show" src="picture/P2/m1.png">
+        </div>
+        <div class="p2">
+            <img src="picture/P2/bg.png">
+        </div>
+    </div>
+</div>
+
+<div class="proj">
+    <div class="left">
+        <div class="wrap">
+            <div class="content">
+                <img onclick="left1()" src="picture/P2/gg.png" class="p1">
+                <img onclick="left1()" src="picture/P2/arrow_left.png">
+            </div>
+        </div>
+    </div>
+    <div class="wrap2">
+        <div id="#e0" class="p1"><img src="picture/P2/m11.png"></div>
+        <div id="#e1" class="p2"><img src="picture/P2/m2.png"></div>
+        <div id="#e2" class="p3"><img src="picture/P2/m3.png"></div>
+        <div id="#e3" class="p4"><img src="picture/P2/m4.png"></div>
+        <div id="#e4" class="p5"><img src="picture/P2/m5.png"></div>
+    </div>
+    <div class="right">
+        <div class="wrap">
+            <div class="content">
+                <img onclick="right1()" src="picture/P2/gg.png" class="p1">
+                <img onclick="right1()" src="picture/P2/arrow_right.png">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="space1">
+
+</div>
+
+<div class="detail">
+    <img src="picture/P3/tu.png" class="bg">
+    <div class="up">
+        <div class="p1">
+            <p class="t1">LANSCAPE GARDEN</p>
+            <p class="t2">Tuo Sheng</p>
+            <p class="t3">——</p>
+            <div class="m1">
+                <img src="picture/P3/圆角矩形 1.png">
+                <text style="display: block;">查看更多+</text>
+            </div>
+        </div>
+        <div class="p2">
+            <text>安徽xxxx建设工程有限公司成立于二零一二年，目前为安徽风景园林协会理事单位，是集园林产业、市政产业等多方面发展的综合性企业。目前公司具有二级建造师12名、工程师25名、高级工程师5名、管理经营人才5名、50余名初中级工程专业技术人员组成的园林专业团队为亭台楼榭、花光水影、小园香径倾尽智慧。</text>
+        </div>
+    </div>
+    <div class="btm">
+        <div class="p1">
+            <p class="t1">2012</p>
+            <div class="t2" >xxxx建设工程公司成立于2012年</div>
+        </div>
+        <div class="p2">
+            <p class="t1">6000</p>
+            <div class="t2" >公司注册资金6000万元</div>
+            <div class="m1">
+                <img src="picture/P3/yuan.png">
+                <text class="t3">万</text>
+            </div>
+        </div>
+        <div class="p3">
+            <P class="t1">1100</P>
+            <div class="t2" >员工数量超过1100人</div>
+        </div>
+        <div class="p4">
+            <P class="t1">2000</P>
+            <div class="t2" >xxxx建设公司警官用户超过2000万</div>
+            <div class="m1">
+                <img src="picture/P3/yuan.png">
+                <text class="t3">万</text>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="example">
+    <div class="up">
+        <text style="display: block;" class="t1">案例展示</text>
+        <text style="display: block;" class="t2">以匠人之心打造传世精品，探究未知的世界</text>
+        <img src="picture/P4/bolang.png" class="m1">
+    </div>
+    <div class="mid">
+        <div class="p1">
+            <img id="left2" onclick="left2()" src="picture/P4/left.png">
+        </div>
+        <div class="p2">
+            <div class="left">
+                <div class="up">
+                    <img id="example1"  src="picture/P4/tt.png">
+                </div>
+                <div class="mid">
+                    <text>法门寺绿化项目-陕西园林绿化工程</text>
+                </div>
+                <div class="btm">
+                    <text>&nbsp;&nbsp;&nbsp;园林绿化是在一定的地域运用工程技术和艺术手段，通过改造地形（或进一步筑山、叠...</text>
+                </div>
+            </div>
+            <div class="right">
+                <div class="up">
+                    <img id="example2"  src="picture/P4/jj.png">
+                </div>
+                <div class="mid">
+                    <text>法门寺绿化项目-陕西园林绿化工程</text>
+                </div>
+                <div class="btm">
+                    <text>&nbsp;&nbsp;&nbsp;园林绿化是在一定的地域运用工程技术和艺术手段，通过改造地形（或进一步筑山、叠...</text>
+                </div>
+            </div>
+        </div>
+        <div class="p3">
+            <img id="right2" onclick="right2()" src="picture/P4/right.png">
+        </div>
+    </div>
+    <div class="btm"></div>
+</div>
+
+<div class="news">
+    <div class="up">
+        <text style="display: block;" class="t1">新闻资讯</text>
+        <text style="display: block;" class="t2">以匠人之心打造传世精品，探究未知的世界</text>
+        <img src="picture/P4/bolang.png" class="m1">
+    </div>
+    <div class="mid">
+        <div class="p">
+            <div class="up">
+                <img src="picture/P5/dd.png">
+            </div>
+
+            <div class="btm" id = "new1">
+<!--                <div class="p1">-->
+<!--                    <text style="display: block;">2018-05-03</text>-->
+<!--                </div>-->
+<!--                <div class="p2">-->
+<!--                    <text style="display: block;">畅想个性人生，百变家居风格</text>-->
+<!--                </div>-->
+<!--                <div class="p3">-->
+<!--                    <text style="display: block;">混搭风格往往最能体现出主人个人的兴趣爱好，在颜色选择上既要符合自己和家人的...</text>-->
+<!--                </div>-->
+            </div>
+        </div>
+        <div class="p">
+            <div class="up">
+                <img src="picture/P5/ff.png">
+            </div>
+
+            <div class="btm" id = "new2">
+<!--                <div class="p1">-->
+<!--                    <text style="display: block;">2018-05-03</text>-->
+<!--                </div>-->
+<!--                <div class="p2">-->
+<!--                    <text style="display: block;">畅想个性人生，百变家居风格</text>-->
+<!--                </div>-->
+<!--                <div class="p3">-->
+<!--                    <text style="display: block;">混搭风格往往最能体现出主人个人的兴趣爱好，在颜色选择上既要符合自己和家人的...</text>-->
+<!--                </div>-->
+            </div>
+        </div>
+        <div class="p">
+            <div class="up">
+                <img src="picture/P5/hh.png">
+            </div>
+
+            <div class="btm" id = "new3">
+<!--                <div class="p1">-->
+<!--                    <text style="display: block;">2018-05-03</text>-->
+<!--                </div>-->
+<!--                <div class="p2">-->
+<!--                    <text style="display: block;">畅想个性人生，百变家居风格</text>-->
+<!--                </div>-->
+<!--                <div class="p3">-->
+<!--                    <text style="display: block;">混搭风格往往最能体现出主人个人的兴趣爱好，在颜色选择上既要符合自己和家人的...</text>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+    <div class="btm">
+
+    </div>
+    <script>
+        const hostname = 'http://localhost:32425/web_last';
+        const api = '/api/queryNews';
+        const proxy = hostname + '/proxy';
+        let news = [];
+        news.push(document.getElementById('new1'), document.getElementById('new2'), document.getElementById('new3'))
+        async function fetchNewURLs () {
+            const response = await fetch(hostname + api);
+            const json = await response.json();
+            const data = json.data;
+            console.log(data);
+            displayNews(json.data);
+        }
+
+        function displayNews(urls) {
+            for (i = 0; i < news.length; i++) {
+                let container = news[i];
+                let url = urls[i];
+                let link = document.createElement('a');
+                link.href = url;
+
+                // 使用 fetch 获取网页内容
+                fetch(proxy + "?url=" +  url)
+                    .then(response => response.text()) // 获取网页的 HTML 文本
+                    .then(html => {
+                        // 创建一个 DOMParser 对象
+                        const parser = new DOMParser();
+
+                        // 将 HTML 文本解析为 DOM 对象
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        // 提取新闻标题
+                        const title = doc.querySelector('h1')?.textContent || '未找到标题';
+                        console.log('新闻标题:', title);
+                        link.text = title;
+                    })
+                    .catch(error => {
+                        console.error('请求失败:', error);
+                    });
+                link.style.color = 'blue';
+                link.onmouseover = function () {
+                    link.style.color = 'red'; // 修改文字颜色
+                    // link.style.fontSize = '16px';
+                    link.style.textDecoration = 'underline'; // 添加下划线
+                };
+
+                // 鼠标移出时恢复样式
+                link.onmouseout = function () {
+                    link.style.color = 'blue'; // 恢复文字颜色
+                    link.style.textDecoration = 'none'; // 移除下划线
+                    // link.style.fontSize = '16px';
+                };
+                container.appendChild(link);
+            }
+
+        }
+        fetchNewURLs();
+    </script>
+</div>
+
+<div class="footer">
+    <img src="picture/P6/bg.png" class="bg">
+    <div class="wrap">
+        <div class="p1">
+            <div class="up">
+                <hr style="color: #ffffff;">
+            </div>
+            <div class="mid">
+                <div class="left">
+                    <div class="div1">
+                        <img src="picture/P1/logo.png">
+                    </div>
+                    <div class="div2">
+                        <text class="t1">拓盛建设工程</text>
+                        <text class="t2">Tuosheng Jianshe Gongcheng</text>
+                    </div>
+                </div>
+                <div class="mid"></div>
+                <div class="right">
+                    <ul class="container">
+                        <li><a href="#" style="color: #ffffff;">xxxx首页</a></li>
+                        <li><a href="#" style="color: #ffffff;">关于我们</a></li>
+                        <li><a href="#" style="color: #ffffff;">服务项目</a></li>
+                        <li><a href="#" style="color: #ffffff;">案例提示</a></li>
+                        <li><a href="#" style="color: #ffffff;">新闻中心</a></li>
+                        <li><a href="#" style="color: #ffffff;">人才发展</a></li>
+                        <li><a href="#" style="color: #ffffff;">联系我们</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btm">
+                <hr style="color: #ffffff;">
+            </div>
+        </div>
+        <div class="p2">
+            <text class="t1">公司地址：cxxxxxxxxxxxxxx</text>
+            <text class="t2">Copyright &copy;2019 安徽xxxx建设工程有限公司 版权所有 www.5imoban.net</text>
+            <text class="t3">备案号：皖ICP备88888888号-1</text>
+            <img src="picture/P6/QQ.png" style="filter: invert(0.4)" class="img1">
+            <img src="picture/P6/wx.png" style="filter: invert(0.35)" class="img2">
+            <img src="picture/P6/wb.png" style="filter: invert(0.45)" class="img3">
+            <div class="d1">
+                <img src="picture/P6/f_tel.png">
+            </div>
+            <text class="t4">免费资讯方式</text>
+            <text class="t5">0551-88888888</text>
+        </div>
+        <div class="p3">
+            <div class="up">
+                <hr style="color: #ffffff;">
+            </div>
+            <div class="btm" style="color: #ffffff;">
+                <text>友情链接：好生意 西安景观石 陕西白芨苗 好生意 西安景观石 陕西白芨苗 好生意 西安景观石 陕西白芨苗</text>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="./script/web.js"></script>
+</body>
+</html>

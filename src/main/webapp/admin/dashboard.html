@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态图片展示</title>
+    <style>
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .image-item {
+            position: relative;
+            margin: 10px;
+        }
+
+        .image-item img {
+            width: 400px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        /*img {*/
+        /*    width: 400px;*/
+        /*    height: 200px;*/
+        /*    object-fit: cover;*/
+
+        /*}*/
+        .delete-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #preview {
+            width: 400px;
+            margin-top: 20px;
+            height: 200px;
+        }
+
+        #preview img {
+            width: 400px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        #status {
+            margin-top: 20px;
+            color: green;
+        }
+
+        .news-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .news-item {
+            position: relative;
+            width: 300px;
+            padding: 20px;
+            margin: 10px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+        }
+
+        .news-container a {
+            display: block;
+            margin-bottom: 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .news-container a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        .news-input-container {
+            display: flex;
+            flex-wrap: wrap;
+
+        }
+
+        .news-change-button-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .news-change-button-item {
+            position: relative;
+            width: 300px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .news-change-button-item button {
+            width: 100px;
+        }
+
+        .news-input {
+            position: relative;
+            width: 300px;
+            padding: 20px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="image-container" id="imageContainer"></div>
+<input type="file" id="fileInput" accept="image/*"/>
+<!--<div id = "fileInputText">选择文件</div>-->
+<button id="uploadButton">上传图片</button>
+<button id="reloadButton">重新加载图片</button>
+<button id="logoutButton">退出登录</button>
+<div id="preview"></div>
+<div id="status"></div>
+
+<p>输入链接替换新闻</p>
+
+<div class="news-container" id="newsContainer">
+    <div class="news-item" id="new1"></div>
+    <div class="news-item" id="new2"></div>
+    <div class="news-item" id="new3"></div>
+</div>
+
+<div class="news-input-container" id="newsInputContainer">
+    <input type="text" class="news-input" id="input1"></input>
+    <input type="text" class="news-input" id="input2"></input>
+    <input type="text" class="news-input" id="input3"></input>
+</div>
+
+<div class="news-change-button-container">
+    <div class="news-change-button-item">
+        <button onclick="changeNews()" id="changeButton">替换</button>
+    </div>
+    <div class="news-change-button-item">
+        <button onclick = "uploadNews()" id="newsUpdateConfirm">确认更改</button>
+
+    </div>
+</div>
+
+
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

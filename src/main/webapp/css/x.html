@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flexbox 个体调整示例</title>
+    <style>
+        .flex-container {
+            display: flex;
+            background-color: lightgray;
+            padding: 10px;
+        }
+        .flex-item {
+            background-color: lightblue;
+            padding: 20px;
+            margin: 10px;
+        }
+        .item1 {
+            flex: 1 1 200px; /* 放大比例为2，缩小比例为1，初始宽度为200px */
+        }
+        .item2 {
+            flex: 1 1 100px; /* 放大比例为1，缩小比例为1，初始宽度为100px */
+        }
+        .item3 {
+            flex: 1 1 100px; /* 放大比例为1，缩小比例为1，初始宽度为100px */
+        }
+    </style>
+</head>
+<body>
+    <div class="flex-container">
+        <div class="flex-item item1">Flex 项目 1</div>
+        <div class="flex-item item2">Flex 项目 2</div>
+        <div class="flex-item item3">Flex 项目 3</div>
+    </div>
+</body>
+</html>

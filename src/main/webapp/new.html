@@ -1,0 +1,47 @@
+<html>
+
+<body>
+
+<div id="news">
+    <a id = "new111" href=https://www.news.cn/politics/leaders/20241220/753bab6a3b2047a7b8304855c0086b70/c.html>
+
+    </a>
+
+</div>
+</body>
+<script>
+
+    // 目标 URL
+    const url = 'https://www.news.cn/politics/leaders/20241220/753bab6a3b2047a7b8304855c0086b70/c.html';
+    const hostname = 'http://localhost:32425/web_last/proxy'
+
+    // 使用 fetch 获取网页内容
+    fetch(hostname + "?url=" +  url)
+        .then(response => response.text()) // 获取网页的 HTML 文本
+        .then(html => {
+            // 创建一个 DOMParser 对象
+            const parser = new DOMParser();
+
+            // 将 HTML 文本解析为 DOM 对象
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // 提取新闻标题
+            const title = doc.querySelector('h1')?.textContent || '未找到标题';
+            console.log('新闻标题:', title);
+            new111.innerText = title;
+
+            // 提取新闻正文（假设正文在 <div class="content"> 中）
+            const content = doc.querySelector('div.content')?.textContent || '未找到正文';
+            console.log('新闻正文:', content);
+
+            // 提取发布时间（假设时间在 <time> 标签中）
+            const timeElement = doc.querySelector('time');
+            const publishTime = timeElement ? timeElement.textContent : '未找到发布时间';
+            console.log('发布时间:', publishTime);
+        })
+        .catch(error => {
+            console.error('请求失败:', error);
+        });
+</script>
+
+</html>
